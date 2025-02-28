@@ -1,0 +1,50 @@
+name: flutter_core
+description: "Flutter Core Library Concept"
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.7.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  # Flutter
+  # This dependency is used to build the application.
+  # See https://flutter.dev for more information.
+  flutter:
+    sdk: flutter
+
+  # Flutter Blue Plus
+  # This dependency is used to interact with Bluetooth Low Energy (BLE) devices.
+  # See https://pub.dev/packages/flutter_blue_plus for more information.
+  flutter_blue_plus: ^1.35.3
+
+  # Logger
+  # This dependency is used to log messages to the console.
+  # See https://pub.dev/packages/logger for more information.
+  logger: ^2.5.0
+
+  # Shared Preferences
+  # This dependency is used to store key-value pairs on the device.
+  # See https://pub.dev/packages/shared_preferences for more information.
+  shared_preferences: ^2.5.2
+
+dev_dependencies:
+  # Flutter Test
+  # This dependency is used to write tests for the application.
+  # See https://flutter.dev/docs/cookbook/testing/unit/introduction for more information.
+  flutter_test:
+    sdk: flutter
+
+  # Total Lints
+  # This dependency is used to enforce good coding practices in the application. Rules can be configured in the
+  # `analysis_options.yaml` file located at the root of the project.
+  # See https://pub.dev/packages/total_lints for more information.
+  total_lints: ^3.4.0
+
+flutter:
+  # Allows the Material Icons font to be used in the application.
+  uses-material-design: true
+
+# assets:
+#   - assets/translations/en-US.json
