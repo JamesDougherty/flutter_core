@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 
 import '../core/cs_crc16.dart';
 import '../core/cs_log.dart';
@@ -41,6 +41,8 @@ class CsBleProcessor {
   CsBleProcessor._internal();
 
   Future<void> dispose() async {
+    stop();
+
     if (!_onBleProcessorReconnectRequest.isClosed) {
       await _onBleProcessorReconnectRequest.close();
     }
@@ -117,9 +119,13 @@ class CsBleProcessor {
       _chunkPacket(_queue.first);
     }
 
-    if (_lastEntry == null && _packetQueue.isNotEmpty && _packetQueue.first.device.isConnected) {
-      _lastEntry = _packetQueue.removeFirst();
-      await _retryCurrentPacket();
+    if (_lastEntry == null && _packetQueue.isNotEmpty) {
+      if (_packetQueue.first.device.isConnected) {
+        _lastEntry = _packetQueue.removeFirst();
+        await _retryCurrentPacket();
+      } else {
+        _packetQueue.removeFirst();
+      }
     }
 
     if (_idPacketAcknowledged) {
@@ -134,7 +140,7 @@ class CsBleProcessor {
   }
 
   static Future<bool> _processStatusPacket(CsDeviceBase device, List<int> buffer) async {
-    if (buffer.length < _CsBleProcessorConstants.headerSizeBytes) {
+    if (!device.isConnected || buffer.length < _CsBleProcessorConstants.headerSizeBytes) {
       return Future.value(false);
     }
 
@@ -207,7 +213,7 @@ class CsBleProcessor {
   }
 
   static Future<void> _processDataPacket(CsDeviceBase device, List<int> buffer) async {
-    if (buffer.length < _CsBleProcessorConstants.crcSizeBytes || device.bleDevice == null) {
+    if (!device.isConnected || buffer.length < _CsBleProcessorConstants.crcSizeBytes || device.bleDevice == null) {
       return;
     }
 
@@ -278,7 +284,7 @@ class CsBleProcessor {
   static void _chunkPacket(CsBleQueueEntry entry) {
     _packetQueue.clear();
 
-    if (entry.packet.isEmpty) {
+    if (!entry.device.isConnected || entry.packet.isEmpty) {
       return;
     }
 
@@ -327,10 +333,14 @@ class CsBleProcessor {
     }
 
     if (++_packetRetry <= _CsBleProcessorConstants.packetRetries) {
-      if (!await _lastEntry!.device.write(_lastEntry!.packet)) {
+      if (!_lastEntry!.device.isConnected) {
         await _lastEntry!.device.connect();
       }
-      _restartTimeout();
+      if (!await _lastEntry!.device.write(_lastEntry!.packet)) {
+        _finalizeFailedResponse('Failed to write packet');
+      } else {
+        _restartTimeout();
+      }
     } else {
       _queue.removeFirst();
       _finalizeFailedResponse('Packet Retries Exceeded');
@@ -339,9 +349,13 @@ class CsBleProcessor {
 
   static void _restartTimeout() {
     _cancelTimeout();
-    _timeoutTimer = Timer(const Duration(milliseconds: _CsBleProcessorConstants.processorTimeoutMs), () {
-      _finalizeFailedResponse('Timeout');
-    });
+    if (_lastEntry!.device.isConnected) {
+      _timeoutTimer = Timer(const Duration(milliseconds: _CsBleProcessorConstants.processorTimeoutMs), () {
+        _finalizeFailedResponse('Timeout');
+      });
+    } else {
+      _finalizeFailedResponse('Device not connected');
+    }
   }
 
   static void _cancelTimeout() {
@@ -382,6 +396,10 @@ class CsBleProcessor {
   }
 
   static Future<bool> _writeStatusPacket(CsDeviceBase device, int header) async {
+    if (!device.isConnected) {
+      _finalizeFailedResponse('Device not connected');
+      return Future.value(false);
+    }
     return device.write([(header & 0xFF)]);
   }
 
@@ -421,13 +439,5 @@ class _CsBleProcessorConstants {
   static const headerTimeout = 0x2;
   static const headerTimeoutType = 0x1;
   static const headerNop = 0x0;
-
-  // dart format off
   static const headerSinglePacket = headerFirstPacket | headerLastPacket;
-
-  static const headerIdPacket = headerSinglePacket |
-                                headerKeepAlive |
-                                headerAckNak    |
-                                headerTimeout;
-  // dart format on
 }
