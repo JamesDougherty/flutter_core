@@ -1,4 +1,3 @@
-
 import 'cs_device_type.dart';
 
 class CsDeviceIdentifier {

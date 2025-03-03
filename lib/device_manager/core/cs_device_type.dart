@@ -1,5 +1,1 @@
-
-enum CsDeviceType {
-  unknown,
-  valveEvb034,
-}
+enum CsDeviceType { unknown, valveEvb034 }

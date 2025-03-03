@@ -14,7 +14,7 @@ class CsLog {
   ///
   /// Info log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.
@@ -26,7 +26,7 @@ class CsLog {
   ///
   /// Debug log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.
@@ -39,7 +39,7 @@ class CsLog {
   ///
   /// Warning log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.
@@ -52,7 +52,7 @@ class CsLog {
   ///
   /// Error log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.
@@ -65,7 +65,7 @@ class CsLog {
   ///
   /// Fatal error log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.
@@ -78,7 +78,7 @@ class CsLog {
   ///
   /// Trace / Verbose log message.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `message` - Log message.
   /// - `time` - Time of the log message.
   /// - `error` - Error object.

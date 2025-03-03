@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../core/cs_log.dart';
-import '../device_manager/core/cs_device.dart';
+import '../device_manager/core/cs_device_base.dart';
 import '../device_manager/cs_device_manager.dart';
 import 'core/cs_ble_device.dart';
 import 'core/cs_ble_rssi_average.dart';
@@ -15,7 +15,7 @@ import 'core/cs_ble_scan_start_result.dart';
 class CsBleScanner {
   static final CsBleScanner _instance = CsBleScanner._internal();
   final StreamController<bool> _onScanStatusController = StreamController.broadcast();
-  final StreamController<CsDevice> _onDeviceScannedController = StreamController.broadcast();
+  final StreamController<CsDeviceBase> _onDeviceScannedController = StreamController.broadcast();
   StreamSubscription<BluetoothAdapterState>? _adapterStateSubscription;
   StreamSubscription<List<ScanResult>>? _scanResultsSubscription;
   StreamSubscription<bool>? _isScanningSubscription;
@@ -61,6 +61,11 @@ class CsBleScanner {
   }
 
   ///
+  /// Get the current scan status.
+  ///
+  bool get isScanning => FlutterBluePlus.isScanningNow;
+
+  ///
   /// Stream that emits a boolean value indicating if a scan is in progress or not.
   /// True if a scan is in progress, false otherwise.
   ///
@@ -75,26 +80,7 @@ class CsBleScanner {
   /// **Returns**
   /// - A [Stream] that emits [CsBleDevice] objects when a device is scanned.
   ///
-  Stream<CsDevice> onDeviceScanned() => _onDeviceScannedController.stream;
-
-  ///
-  /// Set the list of registered scan filters.
-  ///
-  /// The scan filters are used to filter the scan results based on the device's name. If the device's name starts with
-  /// any of the strings in the list, then it will be included in the scan results. If the list is empty, then all
-  /// devices will be included in the scan results.
-  ///
-  /// **Parameters:**
-  /// - `filters`: A list of strings used to filter the scan results or null to include all devices.
-  /// - `restartScan`: Whether to restart an active scan, if applicable, after setting the filters. Default is false.
-  ///
-  Future<void> setFilters(List<String>? filters, {bool restartScan = false}) async {
-    _filters = filters ?? [];
-    CsLog.d('[BLE Scanner] Setting filters [New Filters: $_filters]');
-    if (restartScan) {
-      await restart();
-    }
-  }
+  Stream<CsDeviceBase> onDeviceScanned() => _onDeviceScannedController.stream;
 
   ///
   /// Start scanning for BLE devices. The scan will run for [timeoutMs] milliseconds using the specified
@@ -111,12 +97,12 @@ class CsBleScanner {
   /// The scan will run for [timeoutMs] milliseconds using the specified [androidScanMode] mode.
   /// If [uniqueDevicesOnly] is set to true, then only unique devices will be included in the scan results.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `timeoutMs`: The duration of the scan in milliseconds. Default is 7500 ms.
   /// - `androidScanMode`: The scan mode to use on Android devices. Default is [AndroidScanMode.lowLatency].
   /// - `uniqueDevicesOnly`: Whether to include only unique devices in the scan results. Default is false.
   ///
-  /// **Returns:**
+  /// **Returns**
   /// - A [CsBleScanStartResult] to indicate the result of the operation.
   ///
   Future<CsBleScanStartResult> startScan({
@@ -137,7 +123,9 @@ class CsBleScanner {
       return CsBleScanStartResult.bluetoothNotOn;
     }
 
-    CsLog.d('[BLE Scanner] Scan starting [Timeout: $timeoutMs ms]');
+    _filters = CsDeviceManager().deviceIdentifiers;
+
+    CsLog.d('[BLE Scanner] Scan starting [Timeout: $timeoutMs ms] [Filters: $_filters]');
 
     try {
       await FlutterBluePlus.startScan(timeout: Duration(milliseconds: timeoutMs));
@@ -184,10 +172,10 @@ class CsBleScanner {
   ///
   /// Determine if a device should be filtered out of the scan results based on the filters provided.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `scanResult`: The [ScanResult] object to check.
   ///
-  /// **Returns:**
+  /// **Returns**
   /// - True if the device should be filtered out, false otherwise.
   ///
   bool _deviceFiltered(ScanResult scanResult) =>
@@ -197,7 +185,7 @@ class CsBleScanner {
   ///
   /// Determine if a device is unique based on the [_uniqueDevicesOnly] flag and the scan results.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `scanResult`: The [ScanResult] object to check.
   ///
   bool _deviceUnique(ScanResult scanResult) => !_uniqueDevicesOnly || !_scanResults.contains(scanResult);
@@ -206,7 +194,7 @@ class CsBleScanner {
   /// Handle a device being discovered during a scan. This method will update the average RSSI value for the device and
   /// emit a [CsBleDevice] object.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `scanResult`: The [ScanResult] object representing the discovered device.
   ///
   void _onDeviceDiscovered(ScanResult scanResult) {
@@ -222,7 +210,7 @@ class CsBleScanner {
       rssiAverage = _rssiAverages[address]?.average ?? 0;
     }
 
-    final CsDevice? device = CsDeviceManager().getDevice(scanResult.advertisementData.advName);
+    final CsDeviceBase? device = CsDeviceManager().getDevice(scanResult.advertisementData.advName);
 
     if (device == null) {
       return;
@@ -259,7 +247,7 @@ class CsBleScanner {
   ///
   /// Handle the scan status changing.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `isScanning`: True if a scan is in progress, false otherwise.
   ///
   void _onIsScanning(bool isScanning) {
@@ -276,7 +264,7 @@ class CsBleScanner {
   ///
   /// Handle the scan results.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `scanResults`: A list of [ScanResult] objects representing the devices discovered during the scan.
   ///
   void _onScanResults(List<ScanResult> scanResults) {

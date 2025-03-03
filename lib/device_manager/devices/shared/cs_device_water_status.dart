@@ -1,4 +1,3 @@
-
 enum CsDeviceWaterStatus {
   unknown(-1),
   waterOn(0),

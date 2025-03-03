@@ -1,4 +1,3 @@
-
 enum CsDeviceSaltSensorStatus {
   unknown(-1),
   saltOkay(0),

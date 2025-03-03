@@ -1,0 +1,1 @@
+enum CsBleConnectionState { connected, disconnected }

@@ -5,8 +5,6 @@ import 'bluetooth/cs_ble.dart';
 import 'bluetooth/cs_ble_scanner.dart';
 import 'core/cs_log.dart';
 import 'core/cs_shared_preferences.dart';
-import 'device_manager/core/cs_device_identifier.dart';
-import 'device_manager/core/cs_device_type.dart';
 import 'device_manager/cs_device_manager.dart';
 import 'device_manager/devices/valve_evb034/cs_valve_evb034.dart';
 
@@ -17,17 +15,29 @@ import 'device_manager/devices/valve_evb034/cs_valve_evb034.dart';
 //
 
 export 'bluetooth/core/cs_ble_adapter_state.dart';
+export 'bluetooth/core/cs_ble_change.dart';
+export 'bluetooth/core/cs_ble_connect_result.dart';
+export 'bluetooth/core/cs_ble_connection_state.dart';
 export 'bluetooth/core/cs_ble_device.dart';
 export 'bluetooth/core/cs_ble_gatt_service.dart';
+export 'bluetooth/core/cs_ble_json_packet.dart';
+export 'bluetooth/core/cs_ble_packet.dart';
+export 'bluetooth/core/cs_ble_process_data_type.dart';
+export 'bluetooth/core/cs_ble_processor_ack_nak.dart';
+export 'bluetooth/core/cs_ble_queue_entry.dart';
 export 'bluetooth/core/cs_ble_scan_start_result.dart';
+export 'bluetooth/cs_ble.dart';
+export 'bluetooth/cs_ble_processor.dart';
 export 'bluetooth/cs_ble_scanner.dart';
 export 'bluetooth/extensions/cs_ble_device_ext.dart';
 export 'bluetooth/extensions/cs_scan_result_ext.dart';
 export 'branding/cs_branding_core_strings.dart';
+export 'core/cs_crc16.dart';
+export 'core/cs_crc8.dart';
 export 'core/cs_log.dart';
-export 'core/cs_re_emit_stream_controller.dart';
 export 'core/cs_shared_preferences.dart';
 export 'core/cs_utilities.dart';
+export 'core/cs_variable_timer.dart';
 export 'device_manager/core/cs_device.dart';
 export 'device_manager/core/cs_device_base.dart';
 export 'device_manager/core/cs_device_identifier.dart';
@@ -42,7 +52,6 @@ export 'device_manager/devices/valve_evb034/core/cs_valve_evb034_series.dart';
 export 'device_manager/devices/valve_evb034/core/cs_valve_evb034_type.dart';
 export 'device_manager/devices/valve_evb034/cs_valve_evb034.dart';
 export 'extensions/cs_int_ext.dart';
-export 'extensions/cs_stream_ext.dart';
 
 class CsLib {
   ///
@@ -53,14 +62,7 @@ class CsLib {
     await CsSharedPreferences().initialize();
     await CsBle().initialize();
     await CsBleScanner().initialize();
-
-    CsDeviceManager().registerDevice(
-      CsDeviceIdentifier(
-        identifier: CsValveEvb034().scanFilter,
-        deviceType: CsDeviceType.valveEvb034,
-      ),
-    );
-
+    CsDeviceManager().registerDevice(CsValveEvb034().deviceIdentifier);
     CsLog.d('CsLib Initialized');
   }
 
@@ -70,7 +72,6 @@ class CsLib {
   static Future<void> dispose() async {
     await CsBle().dispose();
     await CsBleScanner().dispose();
-
     CsLog.d('CsLib Disposed');
   }
 }

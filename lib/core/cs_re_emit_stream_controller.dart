@@ -18,20 +18,17 @@ class CsReEmitStreamController<T> {
   /// Constructor for the [CsReEmitStreamController] class. The [initialValue] parameter is the initial value that the
   /// stream controller will emit to new listeners.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `initialValue`: The initial value that the stream controller will emit to new listeners.
   ///
-  CsReEmitStreamController({T? initialValue}) :
-    _latestValue = initialValue;
+  CsReEmitStreamController({T? initialValue}) : _latestValue = initialValue;
 
   ///
   /// Stream getter that returns the stream controller's stream. If the stream controller has an initial value, then
   /// the stream will be created with that value.
   ///
   Stream<T> get stream {
-    return _latestValue == null ?
-      _controller.stream :
-      _controller.stream.initialValueStream(_latestValue as T);
+    return _latestValue == null ? _controller.stream : _controller.stream.initialValueStream(_latestValue as T);
   }
 
   ///

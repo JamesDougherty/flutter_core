@@ -6,6 +6,8 @@ import '../core/cs_log.dart';
 import 'core/cs_ble_adapter_state.dart';
 
 class CsBle {
+  static const int minBlePacketSize = 20;
+  static const int maxBlePacketSize = 512;
   static final CsBle _instance = CsBle._internal();
   final StreamController<CsBleAdapterState> _onAdapterStateController = StreamController.broadcast();
   StreamSubscription<BluetoothAdapterState>? _adapterStateSubscription;

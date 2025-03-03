@@ -1,9 +1,8 @@
-
 extension CsIntExt on int {
   ///
   /// Method to convert an integer to a list of bits.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `bitCount`: The number of bits to convert the integer to. Default is 8.
   ///
   /// **Returns**
@@ -27,7 +26,7 @@ extension CsIntExt on int {
   ///
   /// Method to convert an integer to a list of boolean bits.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `bitCount`: The number of bits to convert the integer to. Default is 8.
   ///
   /// **Returns**

@@ -19,6 +19,11 @@ dependencies:
   # See https://pub.dev/packages/flutter_blue_plus for more information.
   flutter_blue_plus: ^1.35.3
 
+  # JSON Annotation
+  # This dependency is used to generate JSON serialization code for the application.
+  # See https://pub.dev/packages/json_annotation for more information.
+  json_annotation: ^4.9.0
+
   # Logger
   # This dependency is used to log messages to the console.
   # See https://pub.dev/packages/logger for more information.
@@ -35,6 +40,11 @@ dev_dependencies:
   # See https://flutter.dev/docs/cookbook/testing/unit/introduction for more information.
   flutter_test:
     sdk: flutter
+
+  # JSON Serializable
+  # This dependency is used to generate JSON serialization code for the application.
+  # See https://pub.dev/packages/json_serializable for more information.
+  json_serializable: ^6.8.0
 
   # Total Lints
   # This dependency is used to enforce good coding practices in the application. Rules can be configured in the

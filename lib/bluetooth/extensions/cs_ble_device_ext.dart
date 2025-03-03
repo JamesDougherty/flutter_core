@@ -28,7 +28,7 @@ extension CsBleDeviceExt on BluetoothDevice {
     _connectingStream.add(true);
     try {
       await connect(mtu: mtu);
-    } on Exception catch(_){
+    } on Exception catch (_) {
       await disconnect(queue: false);
     } finally {
       _connectingStream.add(false);

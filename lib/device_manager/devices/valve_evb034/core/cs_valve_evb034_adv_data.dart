@@ -45,7 +45,7 @@ class CsValveEvb034AdvData {
     final hasMinLength = manufacturerData.isNotEmpty && manufacturerData.values.first.length >= expectedPayloadLength;
 
     if (!hasMinLength || !scanResult.isCsiDevice) {
-      const String prefix = '[Device Manager] Aborting the processing of the manufacturer data as';
+      const String prefix = '[Valve EVB-034] Aborting the processing of the manufacturer data as';
       if (manufacturerData.isEmpty) {
         CsLog.w('$prefix there is no data available');
       } else if (manufacturerData.values.first.length != expectedPayloadLength) {

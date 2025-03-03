@@ -19,7 +19,7 @@ class CsBleGattService {
   ///
   /// Constructor for the [CsBleGattService] class.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `serviceUuid`: The UUID of the service.
   /// - `readCharacteristicUuid`: The UUID of the characteristic used for reading data.
   /// - `writeCharacteristicUuid`: The UUID of the characteristic used for writing data.

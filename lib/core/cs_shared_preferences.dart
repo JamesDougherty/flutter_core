@@ -25,7 +25,7 @@ class CsSharedPreferences {
   /// Get the device alias for the given device identifier.
   /// Returns null if no alias is set.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `identifier`: The device identifier to get the alias for.
   ///
   /// **Returns**
@@ -39,9 +39,8 @@ class CsSharedPreferences {
       return null;
     }
 
-    final String value = _preferences?.getString(
-      _CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString(),
-    ) ?? '';
+    final String value =
+        _preferences?.getString(_CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString()) ?? '';
 
     if (value.isNotEmpty) {
       CsLog.d('Device alias found for $identifier [Alias: $value]');
@@ -55,7 +54,7 @@ class CsSharedPreferences {
   ///
   /// Set the device alias for the given device identifier.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `identifier`: The device identifier to set the alias for.
   /// - `alias`: The alias to set for the device.
   ///
@@ -65,10 +64,9 @@ class CsSharedPreferences {
   Future<void> setDeviceAlias(DeviceIdentifier identifier, String alias) async {
     assert(_preferences != null, 'CsSharedPreferences not initialized, call init() first');
 
-    final bool settingSet = await _preferences?.setString(
-      _CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString(),
-      alias,
-    ) ?? false;
+    final bool settingSet =
+        await _preferences?.setString(_CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString(), alias) ??
+        false;
 
     if (settingSet) {
       CsLog.d('Device alias set for $identifier [Alias: $alias]');
@@ -80,15 +78,14 @@ class CsSharedPreferences {
   ///
   /// Remove the device alias for the given device identifier.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `identifier`: The device identifier to remove the alias for.
   ///
   Future<void> removeDeviceAlias(DeviceIdentifier identifier) async {
     assert(_preferences != null, 'CsSharedPreferences not initialized, call init() first');
 
-    final bool settingRemoved = await _preferences?.remove(
-      _CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString(),
-    ) ?? false;
+    final bool settingRemoved =
+        await _preferences?.remove(_CsSharedPreferencesKeys.deviceAliasPrefix + identifier.toString()) ?? false;
 
     if (settingRemoved) {
       CsLog.d('Device alias removed for $identifier');

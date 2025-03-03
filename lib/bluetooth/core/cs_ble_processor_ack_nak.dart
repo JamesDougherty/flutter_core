@@ -1,0 +1,1 @@
+enum CsBleProcessorAckNakType { nak, ack }

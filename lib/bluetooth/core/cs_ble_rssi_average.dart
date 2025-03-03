@@ -1,4 +1,3 @@
-
 class CsBleRssiAverage {
   final List<int> _window = List<int>.filled(12, 0);
   int _numberOfElements = 0;
@@ -8,7 +7,7 @@ class CsBleRssiAverage {
 
   ///
   /// Get the average RSSI value.
-  /// 
+  ///
   int get average => _average;
 
   ///

@@ -4,10 +4,10 @@ extension CsStreamExt<T> on Stream<T> {
   ///
   /// Creates a new stream that emits the [initialValue] to new listeners.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - `initialValue`: The value to emit to new listeners.
   ///
-  /// **Returns:**
+  /// **Returns**
   /// - A [Stream] of type [T] that emits the [initialValue] to new listeners.
   ///
   Stream<T> initialValueStream(T initialValue) {

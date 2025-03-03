@@ -25,26 +25,27 @@ class CsDeviceManager {
   ///
   /// Register a device.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - [CsDeviceIdentifier] deviceId: The device identifier to register.
   ///
   /// **NOTE**
   /// - If the device identifier is already registered, it will not be added again.
   /// - The device identifier *should* be not only unique, but it should be a part of the advertised device name.
   ///
-  void registerDevice(CsDeviceIdentifier deviceId) {
-    if (!_deviceIdentifiers.contains(deviceId)) {
+  void registerDevice(CsDeviceIdentifier deviceIdentifier) {
+    if (!_deviceIdentifiers.contains(deviceIdentifier)) {
       CsLog.d(
-        '[Device Manager] Registering device identifier [Id: ${deviceId.identifier}] [Type: ${deviceId.deviceType}]',
+        '[Device Manager] Registering device identifier '
+        '[Id: ${deviceIdentifier.identifier}] [Type: ${deviceIdentifier.deviceType}]',
       );
-      _deviceIdentifiers.add(deviceId);
+      _deviceIdentifiers.add(deviceIdentifier);
     }
   }
 
   ///
   /// Get the device for the given device name.
   ///
-  /// **Parameters:**
+  /// **Parameters**
   /// - [String] deviceName: The name of the device to get.
   ///
   /// **Returns**

@@ -1,4 +1,3 @@
-
 enum CsDeviceBypassStatus {
   unknown(-1),
   bypassOff(0),

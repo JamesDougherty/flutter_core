@@ -1,4 +1,3 @@
-
 enum CsValveEvb034ErrorState {
   noError(0),
   lostHome(2),
