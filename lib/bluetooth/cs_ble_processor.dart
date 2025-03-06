@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 
 import '../core/cs_crc16.dart';
 import '../core/cs_log.dart';
@@ -69,6 +69,10 @@ class CsBleProcessor {
   static Stream<String> get onBleProcessorError => _onBleProcessorError.stream;
 
   static Future<void> start(CsBleProcessDataType dataType) async {
+    if (_processorRunning) {
+      return;
+    }
+
     stop();
     _resetCurrentEntry();
     _dataType = dataType;
@@ -77,18 +81,27 @@ class CsBleProcessor {
       const Duration(milliseconds: _CsBleProcessorConstants.processorIdPacketDelayMs),
       _onProcessorTick,
     );
+    CsLog.d('[BLE Processor] Started with data type: $dataType');
   }
 
   static void stop() {
+    if (!_processorRunning) {
+      return;
+    }
+
     _queue.clear();
     _packetQueue.clear();
     _processorRunning = false;
     _processorTimer?.cancel();
+    CsLog.d('[BLE Processor] Stopped');
   }
 
   static void queuePacket(CsBleQueueEntry entry) {
     if (_processorRunning) {
       _queue.add(entry);
+      CsLog.d('[BLE Processor] Queued packet');
+    } else {
+      CsLog.e('[BLE Processor] Cannot queue packet; processor is not running');
     }
   }
 
@@ -112,6 +125,10 @@ class CsBleProcessor {
   }
 
   static Future<void> _onProcessorTick(CsVariableTimer timer) async {
+    if (!_processorRunning) {
+      return;
+    }
+
     if (!_processingEntry && _queue.isNotEmpty) {
       _processingEntry = true;
       _chunkPacket(_queue.first);
@@ -279,13 +296,16 @@ class CsBleProcessor {
     _packetQueue.clear();
 
     if (entry.packet.isEmpty) {
+      CsLog.d('[BLE Processor] Aborting chunking packet; empty packet');
+      _queue.removeFirst();
+      _resetCurrentEntry();
       return;
     }
 
     final negotiatedMtu = min(entry.device.negotiatedMtu, entry.device.maxBlePacketSize);
     final packetMtu = negotiatedMtu - _CsBleProcessorConstants.headerAndCrcSizeBytes;
     final headerCrcBytes = entry.packet.length / packetMtu.toDouble() * _CsBleProcessorConstants.headerAndCrcSizeBytes;
-    final totalPackets = (entry.packet.length + headerCrcBytes).ceil() ~/ negotiatedMtu;
+    final totalPackets = ((entry.packet.length + headerCrcBytes) / negotiatedMtu).ceil();
 
     for (var i = 0; i < totalPackets; i++) {
       final offset = i * packetMtu;
@@ -327,6 +347,7 @@ class CsBleProcessor {
     }
 
     if (++_packetRetry <= _CsBleProcessorConstants.packetRetries) {
+      CsLog.d('[BLE Processor] Retrying packet [Retry: $_packetRetry]');
       if (!await _lastEntry!.device.write(_lastEntry!.packet)) {
         await _lastEntry!.device.connect();
       }

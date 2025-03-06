@@ -5,8 +5,8 @@ import '../../device_manager/core/cs_device_base.dart';
 @immutable
 class CsBleQueueEntry {
   final CsDeviceBase device;
-  final bool expectingDataResponse;
   final List<int> packet;
+  final bool expectingDataResponse;
 
   const CsBleQueueEntry(this.device, this.packet, {this.expectingDataResponse = false});
 

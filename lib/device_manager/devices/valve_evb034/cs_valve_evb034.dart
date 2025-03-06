@@ -6,6 +6,7 @@ import '/device_manager/core/cs_device_type.dart';
 import '/device_manager/devices/valve_evb034/core/cs_valve_evb034_adv_data.dart';
 import '../../../bluetooth/core/cs_ble_device.dart';
 import '../../../bluetooth/core/cs_ble_gatt_service.dart';
+import '../../../bluetooth/core/cs_ble_process_data_type.dart';
 import '../../../bluetooth/cs_ble.dart';
 import '../../../branding/cs_branding_core_strings.dart';
 import '../../../core/cs_log.dart';
@@ -29,6 +30,9 @@ class CsValveEvb034 extends CsDeviceBase {
     readCharacteristicUuid: Guid('a725458c-bee2-4d2e-9555-edf5a8082303'),
     writeCharacteristicUuid: Guid('a725458c-bee3-4d2e-9555-edf5a8082303'),
   );
+
+  @override
+  CsBleProcessDataType get processDataType => CsBleProcessDataType.json;
 
   @override
   String get alias => CsSharedPreferences().getDeviceAlias(bleDevice?.address) ?? '';

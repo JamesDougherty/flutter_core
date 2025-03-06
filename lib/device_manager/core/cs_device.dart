@@ -1,5 +1,6 @@
 import '../../bluetooth/core/cs_ble_device.dart';
 import '../../bluetooth/core/cs_ble_gatt_service.dart';
+import '../../bluetooth/core/cs_ble_process_data_type.dart';
 import 'cs_device_identifier.dart';
 
 abstract class CsDevice {
@@ -19,6 +20,14 @@ abstract class CsDevice {
   /// Bluetooth perspective) and to get the correct read and write characteristics.
   ///
   CsBleGattService get gattService;
+
+  ///
+  /// The type of data that is being processed by the BLE process. The JSON data can have raw data too, like responses,
+  /// but this is for defining the main type of data that is being processed. All newer firmware versions should use
+  /// JSON data. The raw support is for older firmware versions, such as the EVB-019 (and prior) devices. Note that the
+  /// classic Bluetooth devices are no longer being supported in this app, so the raw data is only for BLE devices.
+  /// 
+  CsBleProcessDataType get processDataType;
 
   ///
   /// The maximum packet size for BLE packets. This is used to determine how many bytes can be sent in a single packet.

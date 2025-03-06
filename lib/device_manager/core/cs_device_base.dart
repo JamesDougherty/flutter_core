@@ -5,7 +5,10 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../bluetooth/core/cs_ble_connect_result.dart';
 import '../../bluetooth/core/cs_ble_connection_state.dart';
 import '../../bluetooth/core/cs_ble_device.dart';
+import '../../bluetooth/core/cs_ble_process_data_type.dart';
+import '../../bluetooth/core/cs_ble_queue_entry.dart';
 import '../../bluetooth/cs_ble.dart';
+import '../../bluetooth/cs_ble_processor.dart';
 import '../../bluetooth/cs_ble_scanner.dart';
 import '../../bluetooth/extensions/cs_ble_device_ext.dart';
 import '../../core/cs_log.dart';
@@ -142,14 +145,23 @@ abstract class CsDeviceBase implements CsDevice {
         await disconnect();
         return;
       }
-
-      //
     } /*on Exception*/ catch (e) {
       CsLog.e(CsUtilities.exceptionToString('[Device Base] Error in _onConnected:', e));
     }
+
+    await CsBleProcessor.start(processDataType);
+
+    const idPacket = 0x80 | 0x40 | 0x20 | 0x8 | 0x2;
+
+    CsLog.d('[Device Base] Sending ID packet [Packet: $idPacket]');
+
+    // CsBleProcessor.queuePacket(CsBleQueueEntry(this, const [idPacket]));
+    await write([idPacket]);
   }
 
   Future<void> _onDisconnected() async {
+    CsBleProcessor.stop();
+
     try {
       await _readCharacteristic?.setNotifyValue(false);
     } /*on Exception*/ catch (e) {
