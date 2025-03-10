@@ -8,6 +8,11 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  # Enumset
+  # This dependency is used to create an Enumset like Kotlin.
+  # See https://pub.dev/packages/enumset for more information.
+  enumset: ^1.0.0
+
   # Flutter
   # This dependency is used to build the application.
   # See https://flutter.dev for more information.

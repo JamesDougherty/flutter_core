@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '/core/cs_shared_preferences.dart';
@@ -13,7 +15,22 @@ import '../../../core/cs_log.dart';
 import '../../core/cs_device_identifier.dart';
 
 class CsValveEvb034 extends CsDeviceBase {
+  StreamSubscription<List<int>>? _readSubscription;
   CsValveEvb034AdvData? _advertisementData;
+
+  @override
+  Future<void> initialize() {
+    _readSubscription = onDataRead.listen((data) {
+      CsLog.d('[Valve EVB-034] Data received: $data');
+    });
+    return super.initialize();
+  }
+
+  @override
+  Future<void> dispose() async {
+    await _readSubscription?.cancel();
+    return super.dispose();
+  }
 
   @override
   CsDeviceIdentifier get deviceIdentifier => CsDeviceIdentifier(

@@ -4,18 +4,18 @@ import '/device_manager/devices/shared/cs_device_salt_sensor_status.dart';
 import '/device_manager/devices/shared/cs_device_water_status.dart';
 import '/device_manager/devices/valve_evb034/core/cs_valve_evb034_error_state.dart';
 import '/device_manager/devices/valve_evb034/core/cs_valve_evb034_series.dart';
-import '/device_manager/devices/valve_evb034/core/cs_valve_evb034_type.dart';
 import '../../../../bluetooth/extensions/cs_scan_result_ext.dart';
 import '../../../../core/cs_log.dart';
 import '../../../../extensions/cs_int_ext.dart';
 import '../../shared/cs_device_bypass_status.dart';
+import 'cs_valve_evb034_type_full.dart';
 
 class CsValveEvb034AdvData {
   List<int> _valveStatusBits = [];
   CsValveEvb034ErrorState _valveErrorState = CsValveEvb034ErrorState.noError;
   int _timeHours = 0;
   int _timeMinutes = 0;
-  CsValveEvb034Type _valveType = CsValveEvb034Type.unknown;
+  CsValveEvb034TypeFull _valveType = CsValveEvb034TypeFull.unknown;
   CsValveEvb034Series _series = CsValveEvb034Series.unknown;
   int _firmwareVersionMajor = 0;
   int _firmwareVersionMinor = 0;
@@ -30,7 +30,7 @@ class CsValveEvb034AdvData {
   CsValveEvb034ErrorState get valveErrorState => _valveErrorState;
   int get timeHours => _timeHours;
   int get timeMinutes => _timeMinutes;
-  CsValveEvb034Type get valveType => _valveType;
+  CsValveEvb034TypeFull get valveType => _valveType;
   CsValveEvb034Series get series => _series;
   int get firmwareVersionMajor => _firmwareVersionMajor;
   int get firmwareVersionMinor => _firmwareVersionMinor;
@@ -83,7 +83,7 @@ class CsValveEvb034AdvData {
     _valveErrorState = CsValveEvb034ErrorState.fromInt(manufacturerData.values.first[1]);
     _timeHours = manufacturerData.values.first[2];
     _timeMinutes = manufacturerData.values.first[3];
-    _valveType = CsValveEvb034Type.fromInt(manufacturerData.values.first[4]);
+    _valveType = CsValveEvb034TypeFull.fromInt(manufacturerData.values.first[4]);
     _series = CsValveEvb034Series.fromInt(manufacturerData.values.first[5]);
     _firmwareVersionMajor = manufacturerData.values.first[6];
     _firmwareVersionMinor = manufacturerData.values.first[7];

@@ -97,10 +97,7 @@ class CsUtilities {
   /// - A byte array containing the short value.
   ///
   static List<int> shortToByteArray(int value) {
-    return [
-      (value >> 8) & 0xFF,
-      value & 0xFF,
-    ];
+    return [(value >> 8) & 0xFF, value & 0xFF];
   }
 
   ///
@@ -111,13 +108,20 @@ class CsUtilities {
   ///
   /// **Returns**
   /// - A byte array containing the int value.
-  /// 
+  ///
   static List<int> intToByteArray(int value) {
-    return [
-      (value >> 24) & 0xFF,
-      (value >> 16) & 0xFF,
-      (value >> 8) & 0xFF,
-      value & 0xFF,
-    ];
+    return [(value >> 24) & 0xFF, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF];
   }
+
+  ///
+  /// Method used to add commas to a number.
+  ///
+  /// **Parameters**
+  /// - [value]: The number to add the commas to.
+  ///
+  /// **Returns**
+  /// - The number with commas added.
+  ///
+  static String addCommasToNumber(num value) =>
+    value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 }

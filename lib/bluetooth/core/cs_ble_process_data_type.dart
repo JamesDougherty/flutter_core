@@ -1,4 +1,3 @@
-
 ///
 /// The type of data that is being processed by the BLE process. The JSON data can have raw data too, like responses,
 /// but this is for defining the main type of data that is being processed. All newer firmware versions should use

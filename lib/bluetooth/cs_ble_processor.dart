@@ -8,11 +8,12 @@ import '../core/cs_log.dart';
 import '../core/cs_utilities.dart';
 import '../core/cs_variable_timer.dart';
 import '../device_manager/core/cs_device_base.dart';
-import 'core/cs_ble_change.dart';
 import 'core/cs_ble_json_packet.dart';
 import 'core/cs_ble_packet.dart';
+import 'core/cs_ble_packet_rx_change.dart';
 import 'core/cs_ble_process_data_type.dart';
 import 'core/cs_ble_processor_ack_nak.dart';
+import 'core/cs_ble_processor_headers.dart';
 import 'core/cs_ble_queue_entry.dart';
 
 class CsBleProcessor {
@@ -172,11 +173,11 @@ class CsBleProcessor {
     }
 
     // Keep-Alive Packet
-    if ((header & _CsBleProcessorConstants.headerKeepAlive) > 0) {
+    if ((header & CsBleProcessorHeaders.keepAlive) > 0) {
       _cancelTimeout();
       await _writeKeepAlivePacket(
         device,
-        (header & _CsBleProcessorConstants.headerKeepAliveType > 0)
+        (header & CsBleProcessorHeaders.keepAliveType > 0)
             ? _CsBleProcessorKeepAliveType.marco
             : _CsBleProcessorKeepAliveType.polo,
       );
@@ -186,7 +187,7 @@ class CsBleProcessor {
     }
 
     // ACK / NAK Packet
-    if ((header & _CsBleProcessorConstants.headerAckNak) > 0) {
+    if ((header & CsBleProcessorHeaders.ackNak) > 0) {
       _cancelTimeout();
 
       if (!_idPacketAcknowledged) {
@@ -194,7 +195,7 @@ class CsBleProcessor {
         return Future.value(true);
       }
 
-      if ((header & _CsBleProcessorConstants.headerAckNakType) > 0) {
+      if ((header & CsBleProcessorHeaders.ackNakType) > 0) {
         _onBleProcessorAckNakReceived.sink.add(CsBleProcessorAckNakType.ack);
         if (_packetQueue.isEmpty) {
           _queue.removeFirst();
@@ -211,10 +212,10 @@ class CsBleProcessor {
     }
 
     // Timeout Packet
-    if ((header & _CsBleProcessorConstants.headerTimeout) > 0) {
+    if ((header & CsBleProcessorHeaders.timeout) > 0) {
       await _writeTimeoutPacket(
         device,
-        (header & _CsBleProcessorConstants.headerTimeoutType > 0)
+        (header & CsBleProcessorHeaders.timeoutType > 0)
             ? _CsBleProcessorTimeoutType.query
             : _CsBleProcessorTimeoutType.ack,
       );
@@ -249,7 +250,7 @@ class CsBleProcessor {
       return;
     }
 
-    if ((header & _CsBleProcessorConstants.headerFirstPacket) > 0) {
+    if ((header & CsBleProcessorHeaders.firstPacket) > 0) {
       _receiveBuffers[address] = [];
     }
 
@@ -261,7 +262,7 @@ class CsBleProcessor {
 
     _receiveBuffers[address]!.addAll(packetData);
 
-    if ((header & _CsBleProcessorConstants.headerLastPacket) > 0) {
+    if ((header & CsBleProcessorHeaders.lastPacket) > 0) {
       _cancelTimeout();
       await _writeAckNakPacket(device, CsBleProcessorAckNakType.ack);
 
@@ -273,10 +274,10 @@ class CsBleProcessor {
 
         final jsonString = String.fromCharCodes(_receiveBuffers[address]!).trim();
         final jsonData = json.decode(jsonString) as Map<String, dynamic>;
-        final changes = List<CsBleChange>.empty(growable: true);
+        final changes = List<CsBlePacketRxChange>.empty(growable: true);
 
         for (final entry in jsonData.entries) {
-          changes.add(CsBleChange(key: entry.key, value: jsonData[entry.key]));
+          changes.add(CsBlePacketRxChange(key: entry.key, value: jsonData[entry.key]));
         }
 
         final packet = CsBlePacket(
@@ -329,8 +330,8 @@ class CsBleProcessor {
     required bool expectingDataResponse,
   }) {
     final header =
-        (chunkId == 0 ? _CsBleProcessorConstants.headerFirstPacket : _CsBleProcessorConstants.headerNop) |
-        (chunkId >= totalChunks ? _CsBleProcessorConstants.headerLastPacket : _CsBleProcessorConstants.headerNop);
+        (chunkId == 0 ? CsBleProcessorHeaders.firstPacket : CsBleProcessorHeaders.nop) |
+        (chunkId >= totalChunks ? CsBleProcessorHeaders.lastPacket : CsBleProcessorHeaders.nop);
 
     final headerBytes = [(header & 0xFF)];
     final newPayload = List<int>.from(headerBytes)..addAll(buffer);
@@ -386,33 +387,27 @@ class CsBleProcessor {
   static Future<bool> _writeKeepAlivePacket(CsDeviceBase device, _CsBleProcessorKeepAliveType type) async {
     return _writeStatusPacket(
       device,
-      _CsBleProcessorConstants.headerSinglePacket |
-          _CsBleProcessorConstants.headerKeepAlive |
-          (type == _CsBleProcessorKeepAliveType.polo
-              ? _CsBleProcessorConstants.headerKeepAliveType
-              : _CsBleProcessorConstants.headerNop),
+      CsBleProcessorHeaders.singlePacket |
+          CsBleProcessorHeaders.keepAlive |
+          (type == _CsBleProcessorKeepAliveType.polo ? CsBleProcessorHeaders.keepAliveType : CsBleProcessorHeaders.nop),
     );
   }
 
   static Future<bool> _writeAckNakPacket(CsDeviceBase device, CsBleProcessorAckNakType type) async {
     return _writeStatusPacket(
       device,
-      _CsBleProcessorConstants.headerSinglePacket |
-          _CsBleProcessorConstants.headerAckNak |
-          (type == CsBleProcessorAckNakType.ack
-              ? _CsBleProcessorConstants.headerAckNakType
-              : _CsBleProcessorConstants.headerNop),
+      CsBleProcessorHeaders.singlePacket |
+          CsBleProcessorHeaders.ackNak |
+          (type == CsBleProcessorAckNakType.ack ? CsBleProcessorHeaders.ackNakType : CsBleProcessorHeaders.nop),
     );
   }
 
   static Future<bool> _writeTimeoutPacket(CsDeviceBase device, _CsBleProcessorTimeoutType type) async {
     return _writeStatusPacket(
       device,
-      _CsBleProcessorConstants.headerSinglePacket |
-          _CsBleProcessorConstants.headerTimeout |
-          (type == _CsBleProcessorTimeoutType.ack
-              ? _CsBleProcessorConstants.headerTimeoutType
-              : _CsBleProcessorConstants.headerNop),
+      CsBleProcessorHeaders.singlePacket |
+          CsBleProcessorHeaders.timeout |
+          (type == _CsBleProcessorTimeoutType.ack ? CsBleProcessorHeaders.timeoutType : CsBleProcessorHeaders.nop),
     );
   }
 
@@ -450,15 +445,4 @@ class _CsBleProcessorConstants {
   static const headerSizeBytes = 1;
   static const crcSizeBytes = 2;
   static const headerAndCrcSizeBytes = headerSizeBytes + crcSizeBytes;
-
-  static const headerFirstPacket = 0x80;
-  static const headerLastPacket = 0x40;
-  static const headerKeepAlive = 0x20;
-  static const headerKeepAliveType = 0x10;
-  static const headerAckNak = 0x8;
-  static const headerAckNakType = 0x4;
-  static const headerTimeout = 0x2;
-  static const headerTimeoutType = 0x1;
-  static const headerNop = 0x0;
-  static const headerSinglePacket = headerFirstPacket | headerLastPacket;
 }

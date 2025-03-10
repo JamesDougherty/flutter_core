@@ -1,158 +1,158 @@
 enum CsValveEvb034Type {
-  ///
-  /// Unknown Valve
-  ///
-  unknown(0),
+  unknown(-1),
 
   ///
-  /// Metered Softener, *Standard Piston*
+  /// Valve Type 1, 3, 19 or 21
   ///
-  valveType01(1),
+  meteredSoftener(0),
 
   ///
-  /// Timeclock Softener, *Standard Piston*
+  /// Valve Type 2
   ///
-  valveType02(2),
+  timeClockSoftener(1),
 
   ///
-  /// Metered Softener, *Shutoff Piston*
+  /// Valve Type 4, 5, 6, 7, 20, 22, 26, or 27
   ///
-  valveType03(3),
+  backwashingFilter(2),
 
   ///
-  /// Backwashing Filter, *Standard Piston*
+  /// Valve Type 8
   ///
-  valveType04(4),
+  ultraFilter(3),
 
   ///
-  /// Backwashing Filter, *Shutoff Piston*
+  /// Valve Types 9 or 11
   ///
-  valveType05(5),
+  centurionNitro(4),
 
   ///
-  /// HydroxR Filter, *Standard Piston*
+  /// Valve Type 10 or 12
   ///
-  valveType06(6),
+  centurionNitroSidekick(5),
 
   ///
-  /// ReactR Filter, *Standard Piston*
+  /// Valve Type 16
   ///
-  valveType07(7),
+  centurionNitroSidekickV3(6),
 
   ///
-  /// Ultra Filter, *Standard Piston*
+  /// Valve Type 13
   ///
-  valveType08(8),
+  nitroPro(7),
 
   ///
-  /// Aeration Filter, *Standard Piston*
+  /// Valve Type 14 or 15
   ///
-  valveType09(9),
+  nitroProSidekick(8),
 
   ///
-  /// Aeration Filter, *Final Rinse Piston*
+  /// Valve Type 17
   ///
-  valveType10(10),
+  commercialMeteredSoftener(9),
 
   ///
-  /// Not Used
+  /// Valve Type 18
   ///
-  valveType11(11),
+  commercialBackwashingFilter(10),
 
   ///
-  /// Not Used
+  /// Valve Type 23
   ///
-  valveType12(12),
+  nitroFilter(11),
 
   ///
-  /// Aeration Pro Filter, *Standard Piston*
+  /// Valve Type 24
   ///
-  valveType13(13),
+  sidekick(12),
 
   ///
-  /// Aeration Pro Filter, *Final Rinse Piston*
+  /// Valve Type 25
   ///
-  valveType14(14),
-
-  ///
-  /// Not Used
-  ///
-  valveType15(15),
-
-  ///
-  /// Aeration Pro Filter (for Signature 3), *Final Rinse Piston*
-  ///
-  valveType16(16),
-
-  ///
-  /// Commercial Metered Softener, *Shutoff Piston*
-  ///
-  valveType17(17),
-
-  ///
-  /// Commercial Backwashing Filter, *Shutoff Piston*
-  ///
-  valveType18(18),
-
-  ///
-  /// SD-1 Metered Softener, *Standard Piston*
-  ///
-  valveType19(19),
-
-  ///
-  /// SD-1 Backwashing Filter, *Standard Piston*
-  ///
-  valveType20(20),
-
-  ///
-  /// SD-1 Metered Softener, *Shutoff Piston*
-  ///
-  valveType21(21),
-
-  ///
-  /// SD-1 Backwashing Filter, *Shutoff Piston*
-  ///
-  valveType22(22),
-
-  ///
-  /// SD-1 Aeration Filter, *Shutoff Piston*
-  ///
-  valveType23(23),
-
-  ///
-  /// SD-1 Aeration Pro Filter, *Shutoff Piston*
-  ///
-  valveType24(24),
-
-  ///
-  /// Commercial Aeration Filter, *Shutoff Piston*
-  ///
-  valveType25(25),
-
-  ///
-  /// Backwashing Filter With Feed Pump, *Standard Piston*
-  ///
-  valveType26(26),
-
-  ///
-  /// Backwashing Filter With Feed Pump, *Final Rinse Piston*
-  ///
-  valveType27(27),
-
-  ///
-  /// Commercial Test Valve
-  ///
-  valveType254(254),
-
-  ///
-  /// Test Valve
-  ///
-  testValve(255);
+  commercialAeration(13);
 
   const CsValveEvb034Type(this.value);
   final int value;
 
-  static CsValveEvb034Type fromInt(int value) {
-    return CsValveEvb034Type.values.firstWhere((e) => e.value == value, orElse: () => unknown);
+  static CsValveEvb034Type fromValveType(int value) {
+    switch (value) {
+      case 1:
+      case 3:
+      case 19:
+      case 21:
+        return meteredSoftener;
+
+      case 2:
+        return timeClockSoftener;
+
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 20:
+      case 22:
+      case 26:
+      case 27:
+        return backwashingFilter;
+
+      case 8:
+        return ultraFilter;
+
+      case 9:
+      case 11:
+        return centurionNitro;
+
+      case 10:
+      case 12:
+        return centurionNitroSidekick;
+
+      case 13:
+        return nitroPro;
+
+      case 14:
+      case 15:
+        return nitroProSidekick;
+
+      case 16:
+        return centurionNitroSidekickV3;
+
+      case 17:
+        return commercialMeteredSoftener;
+
+      case 18:
+        return commercialBackwashingFilter;
+
+      case 23:
+        return nitroFilter;
+
+      case 24:
+        return sidekick;
+
+      case 25:
+        return commercialAeration;
+
+      default:
+        return unknown;
+    }
   }
+
+  static bool isCommercial(CsValveEvb034Type valveType, {required bool isTwinValve}) =>
+      !isTwinValve &&
+      (valveType == commercialMeteredSoftener ||
+          valveType == commercialBackwashingFilter ||
+          valveType == commercialAeration);
+
+  static bool isMeteredSoftener(CsValveEvb034Type valveType, {required bool isTwinValve}) =>
+      isTwinValve ||
+      valveType == meteredSoftener ||
+      valveType == commercialMeteredSoftener;
+
+  static bool isAerationValve(CsValveEvb034Type valveType, {required bool isTwinValve}) =>
+      !isTwinValve &&
+      valveType != commercialMeteredSoftener &&
+      valveType != commercialBackwashingFilter &&
+      valveType != meteredSoftener &&
+      valveType != timeClockSoftener &&
+      valveType != backwashingFilter &&
+      valveType != ultraFilter;
 }

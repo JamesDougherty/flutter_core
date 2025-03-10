@@ -5,8 +5,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../bluetooth/core/cs_ble_connect_result.dart';
 import '../../bluetooth/core/cs_ble_connection_state.dart';
 import '../../bluetooth/core/cs_ble_device.dart';
-import '../../bluetooth/core/cs_ble_process_data_type.dart';
-import '../../bluetooth/core/cs_ble_queue_entry.dart';
 import '../../bluetooth/cs_ble.dart';
 import '../../bluetooth/cs_ble_processor.dart';
 import '../../bluetooth/cs_ble_scanner.dart';

@@ -1,5 +1,10 @@
 include: package:total_lints/package.yaml
 
+analyzer:
+  errors:
+    # Don't require switch statements to be exhaustive (allow them to use the `default` case).
+    no_default_cases: ignore
+
 linter:
   rules:
     prefer_single_quotes: true
